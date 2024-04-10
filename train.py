@@ -9,7 +9,7 @@ from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from lightning.pytorch.loggers.wandb import WandbLogger
 from lightning.pytorch.plugins.environments import LightningEnvironment, SLURMEnvironment
 from print_on_steroids import graceful_exceptions, logger
-from simple_parsing import parse
+from simple_parsing import parse, parse_known_args
 from transformers import AutoTokenizer, PreTrainedTokenizerFast
 
 from args import TrainingArgs
@@ -26,7 +26,14 @@ WANDB_PROJECT = "nlp-research-template"
 WANDB_ENTITY = "konstantinjdobler"
 
 
-def main(args: TrainingArgs):
+def main(is_sweep=None, config_path=None):
+    if is_sweep:
+        wandb.init()
+        args, __ = parse_known_args(TrainingArgs, config_path=config_path)
+        args.update_from_dict(wandb.config)
+    else:
+        args = parse(TrainingArgs, add_config_path_arg=True)
+
     ########### CUDA checks ###########
     current_process_rank = get_rank()
     logger.config(rank=current_process_rank, print_rank0_only=True)
@@ -227,7 +234,6 @@ def main(args: TrainingArgs):
 
 
 if __name__ == "__main__":
-    parsed_arg_groups = parse(TrainingArgs, add_config_path_arg=True)
     current_process_rank = get_rank()
     with graceful_exceptions(extra_message=f"Rank: {current_process_rank}"):
-        main(parsed_arg_groups)
+        main()

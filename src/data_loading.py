@@ -173,7 +173,7 @@ class LMDataModule(L.LightningDataModule):
             pin_memory=True,
         )
         return DataLoader(self.val_dataset, collate_fn=self.data_collator, **common_args)
-    
+
     def test_dataloader(self):
         common_args = dict(
             batch_size=self.args.eval_micro_batch_size,

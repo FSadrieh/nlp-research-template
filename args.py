@@ -208,3 +208,8 @@ class TrainingArgs:
         if self.preprocessing_workers == -1:
             # Set to all available CPUs, handle SLURM case when only some CPUs are available to the job
             self.preprocessing_workers = int(os.environ.get("SLURM_JOB_CPUS_PER_NODE", multiprocessing.cpu_count()))
+
+    def update_from_dict(self, values_dict):
+        # Update class variables with values from the dictionary
+        for key, value in values_dict.items():
+            setattr(self, key, value)
