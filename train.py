@@ -187,8 +187,17 @@ def main(args: TrainingArgs):
         if args.only_val:
             exit(0)
 
+    if args.only_test:
+        logger.info(f"Rank {current_process_rank} | Only testing, skipping training...")
+        trainer.test(model, dm)
+        exit(0)
+
     logger.info(f"Rank {current_process_rank} | Starting training...")
     trainer.fit(model, dm, ckpt_path=args.saved_checkpoint_path if args.resume else None)
+
+    if args.test_after_training:
+        logger.info(f"Rank {current_process_rank} | Testing after training...")
+        trainer.test(model, dm)
     if trainer.interrupted and IS_ON_SLURM:
         logger.error(
             "Detected keyboard interrupt, not trying to save latest checkpoint right now because we detected SLURM and do not want to drain the node..."

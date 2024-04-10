@@ -35,6 +35,9 @@ class TrainingArgs:
     val_file: str = field(default="val.txt")
     "Name of the validation file."
 
+    test_file: str = field(default="test.txt")
+    "Name of the test file."
+
     tokenizer_path: str | None = field(default=None)
     "Path to a saved tokenizer to switch the vocabulary. If None, use the hf_model_name."
 
@@ -124,8 +127,14 @@ class TrainingArgs:
     only_val: bool = field(default=False)
     "Only run validation."
 
+    only_test: bool = field(default=False)
+    "Only run test."
+
     val_before_training: bool = field(default=True)
     "Run one validation epoch before training."
+
+    test_after_training: bool = field(default=True)
+    "Run one test epoch after training."
 
     out_dir: Path = field(default="out/")
 

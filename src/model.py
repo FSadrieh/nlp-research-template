@@ -64,6 +64,10 @@ class BasicLM(L.LightningModule):
         loss = self.model(**batch).loss
         self.log("val/loss", loss, on_step=False, on_epoch=True, sync_dist=True)
 
+    def test_step(self, batch, batch_idx):
+        loss = self.model(**batch).loss
+        self.log("test/loss", loss, on_step=False, on_epoch=True, sync_dist=True)
+
     def configure_optimizers(self):
         if self.global_rank == 0:
             logger.info(
